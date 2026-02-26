@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Globe Control</title>
+  <link rel="stylesheet" href="./styles/app.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+      }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="app-bg"></div>
+
+  <div id="title-wrap">
+    <h1>GLOBE CONTROL</h1>
+    <p id="subtitle">Orbit with index finger. Pinch to zoom.</p>
+  </div>
+
+  <aside id="control-panel" aria-label="Control panel">
+    <div class="row">
+      <label for="camera-select">Camera</label>
+      <select id="camera-select"></select>
+    </div>
+
+    <div class="buttons">
+      <button id="start-btn" type="button">Start</button>
+      <button id="stop-btn" type="button" disabled>Stop</button>
+    </div>
+    <div class="buttons">
+      <button id="reset-btn" type="button">Reset View</button>
+      <button id="refresh-btn" type="button">Refresh Cams</button>
+    </div>
+    <div class="buttons">
+      <button id="pin-location-btn" type="button">Pin My Location</button>
+      <button id="focus-pin-btn" type="button" disabled>Focus Pin</button>
+    </div>
+
+    <div class="row">
+      <label for="orbit-sensitivity">Orbit</label>
+      <input id="orbit-sensitivity" type="range" min="0.2" max="3" step="0.1" value="1.2">
+    </div>
+
+    <div class="row">
+      <label for="zoom-sensitivity">Zoom</label>
+      <input id="zoom-sensitivity" type="range" min="0.2" max="4" step="0.1" value="1.4">
+    </div>
+
+    <div class="row">
+      <label for="smoothing">Smoothing</label>
+      <input id="smoothing" type="range" min="0.02" max="0.35" step="0.01" value="0.16">
+    </div>
+
+    <div class="row">
+      <label for="quality-preset">Quality</label>
+      <select id="quality-preset">
+        <option value="precision">Precision</option>
+        <option value="balanced" selected>Balanced</option>
+        <option value="fast">Fast</option>
+      </select>
+    </div>
+
+    <div class="row checkbox-row">
+      <label for="debug-toggle">Debug</label>
+      <input id="debug-toggle" type="checkbox">
+    </div>
+    <div class="row checkbox-row">
+      <label for="autorotate-toggle">Auto-Rotate</label>
+      <input id="autorotate-toggle" type="checkbox" checked>
+    </div>
+
+    <div id="status-pill" data-state="idle">Idle</div>
+    <p id="status-message">Allow camera access and press Start.</p>
+    <p id="sync-status" data-sync="local">Sync: local</p>
+    <p id="quality-status">Quality: --</p>
+    <p id="location-status" data-location="idle">Location: idle</p>
+    <p id="hand-status" data-hand="searching">Hand: searching</p>
+    <p id="pinch-status" data-pinch="inactive">Pinch: inactive</p>
+    <p id="pin-status" data-pin="none">Pin: none</p>
+    <p id="focus-status" data-focus="no_pin">Focus: no_pin</p>
+    <p id="rejection-status" class="debug-line">Reason: --</p>
+
+    <details>
+      <summary>Gesture Guide</summary>
+      <ul>
+        <li>Move index finger to orbit globe</li>
+        <li>Pinch thumb + index to zoom</li>
+      </ul>
+    </details>
+
+    <p id="fps">FPS: --</p>
+  </aside>
+
+  <div id="scene-root"></div>
+
+  <div id="video-wrap">
+    <video id="input-video" autoplay playsinline muted></video>
+    <canvas id="overlay-canvas"></canvas>
+  </div>
+
+  <div id="verify-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-labelledby="verify-modal-title" aria-modal="true">
+      <h2 id="verify-modal-title">Location Verification Needed</h2>
+      <p id="verify-modal-message">Network appears masked. Disable VPN/proxy and retry, or place an untrusted approximate pin.</p>
+      <div class="buttons modal-buttons">
+        <button id="verify-retry-btn" type="button">Retry</button>
+        <button id="verify-approx-btn" type="button">Use Approximate</button>
+      </div>
+      <button id="verify-cancel-btn" class="ghost-btn" type="button">Cancel</button>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
