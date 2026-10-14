@@ -2,6 +2,8 @@
 
 Hand-tracked 3D globe experience with gesture-based orbit/zoom and optional backend sync.
 
+No camera? Drag to turn the globe, scroll or pinch with two fingers to zoom, or click it and use the arrow keys, + and -, and 0 to reset.
+
 ## Modules
 
 - `index.html` + `src/` + `styles/`: browser runtime with MediaPipe + Three.js

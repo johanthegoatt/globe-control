@@ -54,6 +54,16 @@ h1 {
   position: fixed;
   inset: 0;
   z-index: 1;
+  cursor: grab;
+}
+
+#scene-root:active {
+  cursor: grabbing;
+}
+
+#scene-root:focus-visible {
+  outline: 2px solid rgba(119, 192, 255, 0.8);
+  outline-offset: -6px;
 }
 
 #control-panel {

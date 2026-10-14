@@ -341,6 +341,7 @@ export async function createGlobeScene({ mountEl, onTextureWarning }) {
     dispose,
     getZoom: () => state.zoom,
     getZoomSensitivity: () => state.zoomSensitivity,
+    getOrbitSensitivity: () => state.orbitSensitivity,
     getCurrentRotation: () => ({ x: state.rotX, y: state.rotY }),
     getTargetRotation: () => ({ x: state.targetRotX, y: state.targetRotY })
   };

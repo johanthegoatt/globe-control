@@ -1,6 +1,7 @@
 import { CONTROL_DEFAULTS, PERSISTENCE_KEYS, RUNTIME_CONFIG } from "./config.js";
 import { listCameras, pickPreferredCamera, requestCameraBootstrap, startCamera, stopCamera } from "./camera/devices.js";
 import { createGlobeScene } from "./three/globeScene.js";
+import { bindDirectControls } from "./input/directControls.js";
 import { createHandsController } from "./vision/handsController.js";
 import { mapGesturesToControls } from "./vision/gestureMapper.js";
 import { createControlPanel } from "./ui/panel.js";
@@ -657,7 +658,7 @@ async function refreshCameras() {
 async function start(deviceId) {
   if (sessionState.running) return;
   if (!profileState.cameras.length) {
-    status.set("error", "No camera found. Connect a webcam and refresh.");
+    status.set("error", "No camera found. You can still drag, scroll or use the arrow keys.");
     return;
   }
 
@@ -694,7 +695,7 @@ async function start(deviceId) {
     status.set("running", "Tracking live. Move index finger to orbit and pinch to zoom.");
   } catch (error) {
     logger.error("Failed to start camera", error);
-    status.set("error", "Could not start camera. Check permissions or device availability.");
+    status.set("error", "Could not start the camera. Drag, scroll or the arrow keys still work.");
   }
 }
 
@@ -823,6 +824,8 @@ async function init() {
     onTextureWarning: (message) => status.set("running", message)
   });
 
+  bindDirectControls(sceneRoot, scene);
+
   hands = createHandsController({
     videoElement,
     overlayCanvas,
@@ -863,7 +866,7 @@ async function init() {
 
   panel.setRunning(false);
   panel.setLocationPinAvailable(locationState.pinStatus !== "none");
-  status.set("idle", "Allow camera access and press Start.");
+  status.set("idle", "Drag, scroll or use the arrow keys to turn the globe. Press Start to use your hand.");
   if (locationState.pinStatus === "none") {
     locationStatusEl.textContent = "Location: idle";
     setPinBadge("none");
