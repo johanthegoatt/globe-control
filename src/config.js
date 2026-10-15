@@ -1,10 +1,11 @@
 export const TEXTURE_URLS = {
-  earthDay: "https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg",
-  earthNormal: "https://threejs.org/examples/textures/planets/earth_normal_2048.jpg",
-  earthSpecular: "https://threejs.org/examples/textures/planets/earth_specular_2048.jpg",
-  earthNight: "https://threejs.org/examples/textures/planets/earth_lights_2048.png",
-  earthClouds: "https://threejs.org/examples/textures/planets/earth_clouds_1024.png",
-  starfield: "https://threejs.org/examples/textures/galaxy_starfield.png"
+  // Copies of the three.js example textures, served from this site: the
+  // hotlinked starfield on threejs.org went 404 and the rest could follow.
+  earthDay: new URL("../assets/textures/earth_atmos_2048.jpg", import.meta.url).href,
+  earthNormal: new URL("../assets/textures/earth_normal_2048.jpg", import.meta.url).href,
+  earthSpecular: new URL("../assets/textures/earth_specular_2048.jpg", import.meta.url).href,
+  earthNight: new URL("../assets/textures/earth_lights_2048.png", import.meta.url).href,
+  earthClouds: new URL("../assets/textures/earth_clouds_1024.png", import.meta.url).href
 };
 
 export const RUNTIME_CONFIG = {

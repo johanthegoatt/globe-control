@@ -23,6 +23,28 @@ export function computeGeoTransform(lat, lng, radius) {
   };
 }
 
+// Stars as points on a far shell: no texture to fetch, crisp at any size,
+// and a few colour temperatures so the sky is not flat white.
+function createStarfield(count = 2600, radius = 90) {
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const tints = [new THREE.Color(0xffffff), new THREE.Color(0xcfe0ff), new THREE.Color(0xfff1d6), new THREE.Color(0xaec8ff)];
+  for (let i = 0; i < count; i += 1) {
+    // Uniform on the sphere: cos(theta) uniform in [-1, 1].
+    const z = Math.random() * 2 - 1;
+    const angle = Math.random() * Math.PI * 2;
+    const ring = Math.sqrt(1 - z * z);
+    positions.set([ring * Math.cos(angle) * radius, ring * Math.sin(angle) * radius, z * radius], i * 3);
+    const tint = tints[i % tints.length].clone().multiplyScalar(0.45 + Math.random() * 0.55);
+    colors.set([tint.r, tint.g, tint.b], i * 3);
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  const material = new THREE.PointsMaterial({ size: 0.32, vertexColors: true, sizeAttenuation: true, depthWrite: false });
+  return new THREE.Points(geometry, material);
+}
+
 async function loadTextures(onTextureWarning) {
   const loader = new THREE.TextureLoader();
   loader.setCrossOrigin("anonymous");
@@ -56,12 +78,6 @@ async function loadTextures(onTextureWarning) {
     texturePack.clouds = await loader.loadAsync(TEXTURE_URLS.earthClouds);
   } catch {
     texturePack.clouds = null;
-  }
-
-  try {
-    texturePack.stars = await loader.loadAsync(TEXTURE_URLS.starfield);
-  } catch {
-    texturePack.stars = null;
   }
 
   return texturePack;
@@ -130,11 +146,7 @@ export async function createGlobeScene({ mountEl, onTextureWarning }) {
     scene.add(cloudLayer);
   }
 
-  if (textures.stars) {
-    const starsGeo = new THREE.SphereGeometry(90, 72, 72);
-    const starsMat = new THREE.MeshBasicMaterial({ map: textures.stars, side: THREE.BackSide });
-    scene.add(new THREE.Mesh(starsGeo, starsMat));
-  }
+  scene.add(createStarfield());
 
   const debugAxis = new THREE.AxesHelper(SCENE_CONFIG.debugAxisSize);
   debugAxis.visible = false;
