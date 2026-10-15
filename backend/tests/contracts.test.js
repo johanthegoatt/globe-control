@@ -47,3 +47,12 @@ test("session metrics schema requires bounded values", () => {
   });
   assert.equal(parsed.avgFps, 59);
 });
+
+test("startup refuses a missing database and the public salt in production", async () => {
+  const { checkStartupConfig } = await import("../src/config.js");
+  const base = { databaseUrl: "postgres://x", ipHashSalt: "dev_salt_change_me" };
+  assert.deepEqual(checkStartupConfig({}, base), []);
+  assert.match(checkStartupConfig({ NODE_ENV: "production" }, base).join(" "), /IP_HASH_SALT/);
+  assert.match(checkStartupConfig({}, { ...base, databaseUrl: null }).join(" "), /DATABASE_URL/);
+  assert.deepEqual(checkStartupConfig({ NODE_ENV: "production" }, { ...base, ipHashSalt: "s3cret" }), []);
+});
