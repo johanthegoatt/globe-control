@@ -45,41 +45,28 @@ function createStarfield(count = 2600, radius = 90) {
   return new THREE.Points(geometry, material);
 }
 
+// All five load at once; one after another, each waited on the last.
 async function loadTextures(onTextureWarning) {
   const loader = new THREE.TextureLoader();
   loader.setCrossOrigin("anonymous");
 
+  const names = ["day", "normal", "specular", "night", "clouds"];
+  const urls = [
+    TEXTURE_URLS.earthDay,
+    TEXTURE_URLS.earthNormal,
+    TEXTURE_URLS.earthSpecular,
+    TEXTURE_URLS.earthNight,
+    TEXTURE_URLS.earthClouds
+  ];
+  const results = await Promise.allSettled(urls.map((url) => loader.loadAsync(url)));
+
   const texturePack = {};
-
-  try {
-    texturePack.day = await loader.loadAsync(TEXTURE_URLS.earthDay);
-  } catch {
+  results.forEach((result, index) => {
+    texturePack[names[index]] = result.status === "fulfilled" ? result.value : null;
+  });
+  if (!texturePack.day) {
     onTextureWarning?.("Earth day texture failed to load. Using fallback material.");
-    texturePack.day = null;
   }
-
-  try {
-    texturePack.normal = await loader.loadAsync(TEXTURE_URLS.earthNormal);
-  } catch {
-    texturePack.normal = null;
-  }
-
-  try {
-    texturePack.specular = await loader.loadAsync(TEXTURE_URLS.earthSpecular);
-  } catch {
-    texturePack.specular = null;
-  }
-  try {
-    texturePack.night = await loader.loadAsync(TEXTURE_URLS.earthNight);
-  } catch {
-    texturePack.night = null;
-  }
-  try {
-    texturePack.clouds = await loader.loadAsync(TEXTURE_URLS.earthClouds);
-  } catch {
-    texturePack.clouds = null;
-  }
-
   return texturePack;
 }
 
